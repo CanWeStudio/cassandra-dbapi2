@@ -28,6 +28,7 @@ try:
     from cStringIO import StringIO
 except ImportError:
     from StringIO import StringIO
+from warnings import warn
 
 
 PROTOCOL_VERSION             = 0x01
