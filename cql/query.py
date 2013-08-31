@@ -14,7 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import datetime
 import re
+import uuid
 from cql.apivalues import ProgrammingError
 from cql.cqltypes import lookup_casstype
 
@@ -83,12 +85,33 @@ def prepare_query(querytext):
 def cql_quote(term, cql_major_version=3):
     if isinstance(term, unicode):
         return "'%s'" % __escape_quotes(term.encode('utf8'))
-    elif isinstance(term, str):
+    if isinstance(term, str):
         return "'%s'" % __escape_quotes(str(term))
-    elif isinstance(term, bool) and cql_major_version == 2:
-        return "'%s'" % str(term)
-    else:
+    if isinstance(term, bool):
+        if cql_major_version == 2:
+            return "'%s'" % str(term)
+        if cql_major_version == 3:
+            return str(term).lower()
+    if isinstance(term, uuid.UUID):
         return str(term)
+    if isinstance(term, (datetime.datetime, datetime.date)):
+        return term.isoformat()
+    if isinstance(term, dict):
+        pairs = [
+            ':'.join([cql_quote(t, cql_major_version) for t in item])
+            for item in term.iteritems()
+        ]
+        return '{%s}' % ','.join(pairs)
+    if isinstance(term, (set, frozenset)):
+        return '{%s}' % ','.join([
+            cql_quote(t, cql_major_version) for t in term
+        ])
+    if isinstance(term, (list, tuple)):
+        return '[%s]' % ','.join([
+            cql_quote(t, cql_major_version) for t in term
+        ])
+
+    return str(term)
 
 def __escape_quotes(term):
     assert isinstance(term, basestring)
