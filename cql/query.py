@@ -106,8 +106,12 @@ def cql_quote(term, cql_major_version=3):
         return '{%s}' % ','.join([
             cql_quote(t, cql_major_version) for t in term
         ])
-    if isinstance(term, (list, tuple)):
+    if isinstance(term, list):
         return '[%s]' % ','.join([
+            cql_quote(t, cql_major_version) for t in term
+        ])
+    if isinstance(term, tuple):
+        return '(%s)' % ','.join([
             cql_quote(t, cql_major_version) for t in term
         ])
 
