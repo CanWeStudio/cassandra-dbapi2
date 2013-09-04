@@ -20,14 +20,19 @@ from os.path import abspath, join, dirname
 
 setup(
     name="cql",
-    version="1.4.2",
+    version="1.5.0",
     description="Cassandra Query Language driver",
     long_description=open(abspath(join(dirname(__file__), 'README'))).read(),
     maintainer='Cassandra DBAPI-2 Driver Team',
     maintainer_email='client-dev@cassandra.apache.org',
     url="http://code.google.com/a/apache-extras.org/p/cassandra-dbapi2",
     packages=["cql", "cql.cassandra"],
-    install_requires=["thrift"],
+    install_requires=[],
+    extras_require={
+        'thrift': [
+            'thrift',
+        ],
+    },
     provides=["cql"],
     classifiers=[
         "Development Status :: 4 - Beta",
